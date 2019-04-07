@@ -15,14 +15,14 @@ A = A.astype(float) / 255.
 img_size = A.shape
 X = A.reshape(img_size[0] * img_size[1], img_size[2])
 k_arr = [2, 4, 6, 8, 16]
-
+iter = 10
 plt.imshow(A)
 plt.grid(False)
 
 
 # plt.show()
 
-
+# the first centroids
 def init_centroids(K):
     """
     Initializes K centroids that are to be used in K-Means on the dataset X.
@@ -77,12 +77,14 @@ def init_centroids(K):
         return None
 
 
+# calculate the distace from point x to specific centroid
 def distance(x, cent):
     norm = (x[0] - cent[0]) * (x[0] - cent[0]) + (x[1] - cent[1]) * (x[1] - cent[1]) + (x[2] - cent[1]) * (
             x[2] - cent[1])
     return math.sqrt(norm)
 
 
+# return the closest centroid
 def get_closest_point(x, cent_arr):
     minDis = float("inf")
     minPoint = cent_arr[0]
@@ -91,8 +93,58 @@ def get_closest_point(x, cent_arr):
         if dis < minDis:
             minDis = dis
             minPoint = cent
+    return minPoint
 
 
-Centroids = init_centroids(2)
-for point in X:
-    get_closest_point(point, Centroids)
+# make hase to RGB point
+def hash_dict(centPoint):
+    return centPoint[0], centPoint[1], centPoint[2]
+
+
+# re-place the RGB val of centroid
+def arrange_centroids(points):
+    r = 0
+    g = 0
+    b = 0
+    i = 0
+    for p in points:
+        r = r + p[0]
+        g += p[1]
+        b += p[2]
+        i += 1
+    if i == 0:
+        return 0, 0, 0
+    return [r / i, g / i, b / i]
+
+
+def main():
+    Centroids = init_centroids(2)
+    for i in range(iter):
+        Centroids = oneIteration(Centroids)
+        print("new Centroid in iter", i, ":", Centroids)
+
+
+def oneIteration(Centroids):
+    centDictionary = {hash_dict(Centroids[0]): [],
+                      hash_dict(Centroids[1]): []
+                      }
+    # take each pixel
+    for point in X:
+        # find the closest RGB centroid
+        centPoint = get_closest_point(point, Centroids)
+        # make hash to the centroid
+        hash = (hash_dict(centPoint))
+        if hash in centDictionary:
+            # enter centroid to the dictionary
+            centDictionary[hash].append(point)
+        else:
+            print("ERROR")
+    # after the classify, we will re-arrange the centroids
+    newCent = []
+    # re arrange any centroid
+    for dic in centDictionary:
+        newCent.append(arrange_centroids(centDictionary[dic]))
+    return newCent
+
+
+main()
