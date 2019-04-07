@@ -1,2 +1,2 @@
-x=5
-print x
+import sys
+print(sys.version)
