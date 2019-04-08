@@ -2,10 +2,10 @@
 # 205533151
 # K-means algorithm
 
-import numpy as np
-import scipy.io as sio
-import matplotlib.pyplot as plt
 import math
+import matplotlib.pyplot as plt
+import numpy
+import numpy as np
 from scipy.misc import imread
 
 # data preperation (loading, normalizing, reshaping)
@@ -20,10 +20,8 @@ plt.imshow(A)
 plt.grid(False)
 
 
-# plt.show()
-
 # the first centroids
-def init_centroids(K):
+def init_centroids(X, K):
     """
     Initializes K centroids that are to be used in K-Means on the dataset X.
 
@@ -39,7 +37,7 @@ def init_centroids(K):
     centroids : ndarray, shape (K, n_features)
     """
     if K == 2:
-        return np.asarray([[0.0, 0.0, 0.0],
+        return np.asarray([[0., 0., 0.],
                            [0.07843137, 0.06666667, 0.09411765]])
     elif K == 4:
         return np.asarray([[0.72156863, 0.64313725, 0.54901961],
@@ -77,6 +75,8 @@ def init_centroids(K):
         return None
 
 
+# get pixel from the image (RGB format) and the cectroids list
+# return the closest centroid (By norm)
 def find_closest_centroid(pixel, centroidsList):
     minDis = float("inf")
     minIndex = 0
@@ -84,7 +84,7 @@ def find_closest_centroid(pixel, centroidsList):
     for cent in centroidsList:
         dis = distance(pixel, cent)
         if dis < minDis:
-            minDis = i
+            minIndex = i
             minDis = dis
         i += 1
     return minIndex
@@ -98,24 +98,25 @@ def distance(x, cent):
     return math.sqrt(r + g + b)
 
 
-def calculateOneNewCentroid(list):
+# get the pixels which closest to our centroid and rePlace the centroid
+def calculateOneNewCentroid(pixelList):
     r = 0
     g = 0
     b = 0
     i = 0
-    for pixel in list:
+    for pixel in pixelList:
         r += pixel[0]
         g += pixel[1]
         b += pixel[2]
         i += 1
-    if i == 0:
-        return [0, 0, 0]
+    # NOTE: there isnt i=0 because i entered to an empty list the original centroid
     r /= i
     g /= i
     b /= i
     return [r, g, b]
 
 
+# cpecification of each centroid to the avg of his pixels set
 def calculateNewCentoids(dictonary):
     newCenr = []
     for entry in dictonary:
@@ -123,6 +124,7 @@ def calculateNewCentoids(dictonary):
     return newCenr
 
 
+# one iteration in order to specific the centroids
 def oneIter(centroidsList, k):
     dictonary = {}
     # init the dictionary to key:list of pixels
@@ -132,25 +134,40 @@ def oneIter(centroidsList, k):
     for pixel in X:
         cloCent = find_closest_centroid(pixel, centroidsList)
         dictonary[cloCent].append(pixel)
+    # enter original centroid to empty list
+    for cent in range(k):
+        if dictonary[cent] == []:
+            dictonary[cent].append(centroidsList[cent])
     return calculateNewCentoids(dictonary)
 
 
+# iteration of wanted K (# of centroids)
 def oneOfK(k):
-    centroidsList = init_centroids(k)
+    centroidsList = init_centroids(X, k)
     for i in range(iter):
         print("iter {}:".format(i), end=' ')
-        centroidsList = oneIter(centroidsList, k)
         for j in range(k):
-            print(centroidsList[j], end='')
+            r = floorNum(centroidsList[j][0])
+            g = floorNum(centroidsList[j][1])
+            b = floorNum(centroidsList[j][2])
+            print("[{}, {}, {}]".format(r, g, b), end='')
             if j != (k - 1):
-                print(",", end='')
+                print(", ", end='')
         print()
+        centroidsList = oneIter(centroidsList, k)
 
 
+# take 2 digit after the floating point
+def floorNum(num):
+    return numpy.floor(num * 100) / 100
+
+
+# main
 def main():
     for i in k_arr:
         print("k={}:".format(i))
         oneOfK(i)
 
 
+# call the main
 main()
