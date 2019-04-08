@@ -18,7 +18,7 @@ img_size = A.shape
 X = A.reshape(img_size[0] * img_size[1], img_size[2])
 
 k_arr = [2, 4, 8, 16]
-iter = 11
+numOfIters = 11
 
 
 # the first centroids
@@ -87,7 +87,7 @@ def main():
 # iteration of wanted K (# of centroids)
 def oneOfK(k):
     centroidsList = init_centroids(X, k)
-    for i in range(iter):
+    for i in range(numOfIters):
         print("iter {}:".format(i), end=' ')
         for j in range(k):
             r = np.floor((centroidsList[j][0]) * 100) / 100
@@ -109,7 +109,7 @@ def oneIter(centroidsList, k):
         dictonary[cent] = []
     # find the closest cent to the pixel
     for pixel in X:
-        # index of cloesest centroid
+        # index of closest centroid
         cloCent = find_closest_centroid(pixel, centroidsList)
         # add out pixel to the dic of the cent
         dictonary[cloCent].append(pixel)
@@ -120,7 +120,7 @@ def oneIter(centroidsList, k):
     return calculateNewCentoids(dictonary)
 
 
-# get pixel from the image (RGB format) and the cectroids list
+# get pixel from the image (RGB format) and the centroids list
 # return the closest centroid (By norm)
 def find_closest_centroid(pixel, centroidsList):
     minDis = float("inf")
@@ -133,7 +133,7 @@ def find_closest_centroid(pixel, centroidsList):
     return minIndex
 
 
-# calculate the distace from point x to specific centroid
+# calculate the distance from point x to specific centroid
 def distance(x, cent):
     # distance between red of x and red of cent pow 2
     r = (x[0] - cent[0]) ** 2
@@ -143,11 +143,11 @@ def distance(x, cent):
 
 
 # cpecification of each centroid to the avg of his pixels set
-def calculateNewCentoids(dictonary):
-    newCenr = []
-    for entry in dictonary:
-        newCenr.append(calculateOneNewCentroid(dictonary[entry]))
-    return newCenr
+def calculateNewCentoids(dictionary):
+    newCent = []
+    for entry in dictionary:
+        newCent.append(calculateOneNewCentroid(dictionary[entry]))
+    return newCent
 
 
 # get the pixels which closest to our centroid and rePlace the centroid
@@ -158,7 +158,7 @@ def calculateOneNewCentroid(pixelList):
         g += pixel[1]
         b += pixel[2]
     i = len(pixelList)
-    # NOTE: there isnt i=0 because i entered to an empty list the original centroid
+    # NOTE: there isn't i=0 because i entered to an empty list the original centroid
     return [r / i, g / i, b / i]
 
 
