@@ -15,7 +15,7 @@ A = A.astype(float) / 255.
 img_size = A.shape
 X = A.reshape(img_size[0] * img_size[1], img_size[2])
 k_arr = [2, 4, 8, 16]
-iter = 10
+iter = 11
 plt.imshow(A)
 plt.grid(False)
 
@@ -37,7 +37,7 @@ def init_centroids(X, K):
     centroids : ndarray, shape (K, n_features)
     """
     if K == 2:
-        return np.asarray([[0., 0., 0.],
+        return np.asarray([[0.0, 0.0, 0.0],
                            [0.07843137, 0.06666667, 0.09411765]])
     elif K == 4:
         return np.asarray([[0.72156863, 0.64313725, 0.54901961],
