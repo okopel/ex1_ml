@@ -96,7 +96,8 @@ def oneOfK(k):
             print("[{}, {}, {}]".format(r, g, b), end='')
             if j != (k - 1):
                 print(", ", end='')
-        print()
+        if i != (numOfIters - 1):
+            print()
         centroidsList = oneIter(centroidsList, k)
     return deepcopy(centroidsList)
 
