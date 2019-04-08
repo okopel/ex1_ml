@@ -94,6 +94,7 @@ def find_closest_centroid(pixel, centroidsList):
 
 # calculate the distace from point x to specific centroid
 def distance(x, cent):
+    # distance between red of x and red of cent pow 2
     r = (x[0] - cent[0]) * (x[0] - cent[0])
     g = (x[1] - cent[1]) * (x[1] - cent[1])
     b = (x[2] - cent[2]) * (x[2] - cent[2])
