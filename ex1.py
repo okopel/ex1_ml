@@ -14,7 +14,7 @@ A = imread(path)
 A = A.astype(float) / 255.
 img_size = A.shape
 X = A.reshape(img_size[0] * img_size[1], img_size[2])
-k_arr = [2, 4, 6, 8, 16]
+k_arr = [2, 4, 8, 16]
 iter = 10
 plt.imshow(A)
 plt.grid(False)
@@ -77,74 +77,80 @@ def init_centroids(K):
         return None
 
 
+def find_closest_centroid(pixel, centroidsList):
+    minDis = float("inf")
+    minIndex = 0
+    i = 0
+    for cent in centroidsList:
+        dis = distance(pixel, cent)
+        if dis < minDis:
+            minDis = i
+            minDis = dis
+        i += 1
+    return minIndex
+
+
 # calculate the distace from point x to specific centroid
 def distance(x, cent):
-    norm = (x[0] - cent[0]) * (x[0] - cent[0]) + (x[1] - cent[1]) * (x[1] - cent[1]) + (x[2] - cent[1]) * (
-            x[2] - cent[1])
-    return math.sqrt(norm)
+    r = (x[0] - cent[0]) * (x[0] - cent[0])
+    g = (x[1] - cent[1]) * (x[1] - cent[1])
+    b = (x[2] - cent[1]) * (x[2] - cent[1])
+    return math.sqrt(r + g + b)
 
 
-# return the closest centroid
-def get_closest_point(x, cent_arr):
-    minDis = float("inf")
-    minPoint = cent_arr[0]
-    for cent in cent_arr:
-        dis = distance(x, cent)
-        if dis < minDis:
-            minDis = dis
-            minPoint = cent
-    return minPoint
-
-
-# make hase to RGB point
-def hash_dict(centPoint):
-    return centPoint[0], centPoint[1], centPoint[2]
-
-
-# re-place the RGB val of centroid
-def arrange_centroids(points):
+def calculateOneNewCentroid(list):
     r = 0
     g = 0
     b = 0
     i = 0
-    for p in points:
-        r = r + p[0]
-        g += p[1]
-        b += p[2]
+    for pixel in list:
+        r += pixel[0]
+        g += pixel[1]
+        b += pixel[2]
         i += 1
     if i == 0:
-        return 0, 0, 0
-    return [r / i, g / i, b / i]
+        return [0, 0, 0]
+    r /= i
+    g /= i
+    b /= i
+    return [r, g, b]
+
+
+def calculateNewCentoids(dictonary):
+    newCenr = []
+    for entry in dictonary:
+        newCenr.append(calculateOneNewCentroid(dictonary[entry]))
+    return newCenr
+
+
+def oneIter(centroidsList, k):
+    dictonary = {}
+    # init the dictionary to key:list of pixels
+    for cent in range(k):
+        dictonary[cent] = []
+    # find the closest cent to the pixel
+    for pixel in X:
+        cloCent = find_closest_centroid(pixel, centroidsList)
+        dictonary[cloCent].append(pixel)
+    return calculateNewCentoids(dictonary)
+
+
+def oneOfK(k):
+    centroidsList = init_centroids(k)
+    for i in range(iter):
+        print("iter {}:".format(i), end=' ')
+        centroidsList = oneIter(centroidsList, k)
+        for j in range(k):
+            print(centroidsList[j], end='')
+            if j != (k - 1):
+                print(",", end='')
+        print()
 
 
 def main():
-    Centroids = init_centroids(2)
-    for i in range(iter):
-        Centroids = oneIteration(Centroids)
-        print("new Centroid in iter", i, ":", Centroids)
-
-
-def oneIteration(Centroids):
-    centDictionary = {hash_dict(Centroids[0]): [],
-                      hash_dict(Centroids[1]): []
-                      }
-    # take each pixel
-    for point in X:
-        # find the closest RGB centroid
-        centPoint = get_closest_point(point, Centroids)
-        # make hash to the centroid
-        hash = (hash_dict(centPoint))
-        if hash in centDictionary:
-            # enter centroid to the dictionary
-            centDictionary[hash].append(point)
-        else:
-            print("ERROR")
-    # after the classify, we will re-arrange the centroids
-    newCent = []
-    # re arrange any centroid
-    for dic in centDictionary:
-        newCent.append(arrange_centroids(centDictionary[dic]))
-    return newCent
+    for i in k_arr:
+        print("k={}:".format(i))
+        oneOfK(i)
 
 
 main()
