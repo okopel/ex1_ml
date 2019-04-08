@@ -7,7 +7,6 @@ import math
 import matplotlib.pyplot as plt
 import numpy
 import numpy as np
-from numpy.dual import norm
 from scipy.misc import imread
 
 # data preperation (loading, normalizing, reshaping)
