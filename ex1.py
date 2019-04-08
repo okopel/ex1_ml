@@ -1,11 +1,13 @@
 # Ori Kopel
 # 205533151
 # K-means algorithm
+from copy import deepcopy
 
 import math
 import matplotlib.pyplot as plt
 import numpy
 import numpy as np
+from numpy.dual import norm
 from scipy.misc import imread
 
 # data preperation (loading, normalizing, reshaping)
@@ -14,6 +16,7 @@ A = imread(path)
 A = A.astype(float) / 255.
 img_size = A.shape
 X = A.reshape(img_size[0] * img_size[1], img_size[2])
+
 k_arr = [2, 4, 8, 16]
 iter = 11
 plt.imshow(A)
@@ -37,7 +40,7 @@ def init_centroids(X, K):
     centroids : ndarray, shape (K, n_features)
     """
     if K == 2:
-        return np.asarray([[0.0, 0.0, 0.0],
+        return np.asarray([[0., 0., 0.],
                            [0.07843137, 0.06666667, 0.09411765]])
     elif K == 4:
         return np.asarray([[0.72156863, 0.64313725, 0.54901961],
@@ -94,8 +97,9 @@ def find_closest_centroid(pixel, centroidsList):
 def distance(x, cent):
     r = (x[0] - cent[0]) * (x[0] - cent[0])
     g = (x[1] - cent[1]) * (x[1] - cent[1])
-    b = (x[2] - cent[1]) * (x[2] - cent[1])
-    return math.sqrt(r + g + b)
+    b = (x[2] - cent[2]) * (x[2] - cent[2])
+    res = math.sqrt(r + g + b)
+    return res
 
 
 # get the pixels which closest to our centroid and rePlace the centroid
@@ -155,6 +159,7 @@ def oneOfK(k):
                 print(", ", end='')
         print()
         centroidsList = oneIter(centroidsList, k)
+    return deepcopy(centroidsList)
 
 
 # take 2 digit after the floating point
@@ -162,11 +167,25 @@ def floorNum(num):
     return numpy.floor(num * 100) / 100
 
 
+def calcNewPic(newCent, B):
+    for i in range(128):
+        for j in range(128):
+            B[i][j] = find_closest_centroid(B[i][j], newCent)
+    return B
+
+
 # main
 def main():
     for i in k_arr:
+        #        B = A
+        # B = deepcopy(A)
         print("k={}:".format(i))
-        oneOfK(i)
+        newCent = oneOfK(i)
+
+
+#       B = calcNewPic(newCent, B)
+# plt.imshow(B)
+# plt.show()
 
 
 # call the main
