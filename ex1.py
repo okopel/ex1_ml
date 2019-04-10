@@ -76,6 +76,20 @@ def init_centroids(X, K):
         return None
 
 
+# printing format
+def print_cent(cent):
+    if type(cent) == list:
+        cent = np.asarray(cent)
+    if len(cent.shape) == 1:
+        return ' '.join(str(np.floor(100 * cent) / 100).split()).replace('[ ', '[').replace('\n', ' ').replace(' ]',
+                                                                                                               ']').replace(
+            ' ', ', ')
+    else:
+        return ' '.join(str(np.floor(100 * cent) / 100).split()).replace('[ ', '[').replace('\n', ' ').replace(' ]',
+                                                                                                               ']').replace(
+            ' ', ', ')[1:-1]
+
+
 # main
 def main():
     for i in k_arr:
@@ -90,10 +104,7 @@ def oneOfK(k):
     for i in range(numOfIters):
         print("iter {}:".format(i), end=' ')
         for j in range(k):
-            r = np.floor((centroidsList[j][0]) * 100) / 100
-            g = np.floor((centroidsList[j][1]) * 100) / 100
-            b = np.floor((centroidsList[j][2]) * 100) / 100
-            print("[{}, {}, {}]".format(r, g, b), end='')
+            print((print_cent(centroidsList[j])), end='')
             if j != (k - 1):
                 print(", ", end='')
         # print \n just if not the end
